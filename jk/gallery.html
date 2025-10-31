@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImageHub - Gallery</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">ImageHub</div>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="gallery.html" class="active">Gallery</a></li>
+      <li><a href="upload.html">Upload</a></li>
+      <li><input type="text" id="search" placeholder="Search..." onkeyup="filterGallery()"></li>
+    </ul>
+  </nav>
+
+  <!-- Gallery Section -->
+  <section class="featured-section">
+    <h2>Gallery</h2>
+
+    <!-- Category Buttons -->
+    <div id="categoryButtons" class="category-buttons"></div>
+
+    <!-- Image Grid -->
+    <div class="image-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- Modal -->
+  <div id="imageModal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+    <p id="modalTitle"></p>
+    <button id="downloadBtn">Download</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
