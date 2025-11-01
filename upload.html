@@ -1,55 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload - ImageHub</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
+<script>
+  const form = document.getElementById('uploadForm');
+  const status = document.getElementById('uploadStatus');
 
-  <nav>
-    <div class="logo">ImageHub</div>
-    <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="upload.html" class="active">Upload</a></li>
-    </ul>
-  </nav>
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const file = document.getElementById('imageUpload').files[0];
+    if (!file) return alert('Please select an image.');
 
-  <section class="upload-section">
-    <h2>Upload Your Image</h2>
-    <form id="uploadForm">
-      <input type="file" id="imageUpload" accept="image/jpeg, image/png" required>
-      <button type="submit">Upload</button>
-    </form>
-    <p id="uploadStatus"></p>
-  </section>
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'YOUR_UPLOAD_PRESET'); // replace with your preset
 
-  <footer>
-    <p>© 2025 ImageHub | Upload responsibly.</p>
-  </footer>
+    try {
+      const res = await fetch('https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload', { 
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      // Save URL in localStorage for homepage carousel
+      const stored = JSON.parse(localStorage.getItem('uploadedImages')) || [];
+      stored.push({ src: data.secure_url });
+      localStorage.setItem('uploadedImages', JSON.stringify(stored));
 
-  <script>
-    const form = document.getElementById('uploadForm');
-    const status = document.getElementById('uploadStatus');
-
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const file = document.getElementById('imageUpload').files[0];
-      if (!file) return alert('Please select an image.');
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        const stored = JSON.parse(localStorage.getItem('uploadedImages')) || [];
-        stored.push({ src: reader.result });
-        localStorage.setItem('uploadedImages', JSON.stringify(stored));
-        status.textContent = '✅ Upload successful!';
-        form.reset();
-      };
-      reader.readAsDataURL(file);
-    });
-  </script>
-
-</body>
-</html>
-
+      status.textContent = '✅ Upload successful!';
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      status.textContent = '❌ Upload failed!';
+    }
+  });
+</script>
