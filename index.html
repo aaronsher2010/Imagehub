@@ -18,7 +18,7 @@
     <input type="text" id="searchInput" placeholder="Search images...">
   </nav>
 
-  <!-- Hero section -->
+  <!-- Hero Section -->
   <section class="hero">
     <div>
       <h1>Welcome to ImageHub</h1>
@@ -26,7 +26,7 @@
     </div>
   </section>
 
-  <!-- Carousel -->
+  <!-- Carousel Section -->
   <section class="featured-section">
     <h2>Featured Images</h2>
     <div class="carousel">
@@ -45,6 +45,7 @@
     const slideContainer = document.getElementById('carouselSlide');
     let slides = [];
     let currentSlide = 0;
+    let autoSlide;
 
     function showSlide(index) {
       if (!slides.length) return;
@@ -58,23 +59,49 @@
       showSlide(currentSlide);
     }
 
-    // Load from localStorage or show placeholders
-    const savedImages = JSON.parse(localStorage.getItem('uploadedImages')) || [];
-    const images = savedImages.length ? savedImages : [
-      { src: 'https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Wallpaper+1' },
-      { src: 'https://via.placeholder.com/800x400/222222/ffffff?text=Wallpaper+2' },
-      { src: 'https://via.placeholder.com/800x400/333333/ffffff?text=Wallpaper+3' }
+    // Load image URLs from localStorage
+    const storedImages = JSON.parse(localStorage.getItem('uploadedImages')) || [];
+
+    // Default placeholders if no uploads exist
+    const defaultImages = [
+      'https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Wallpaper+1',
+      'https://via.placeholder.com/800x400/222222/ffffff?text=Wallpaper+2',
+      'https://via.placeholder.com/800x400/333333/ffffff?text=Wallpaper+3'
     ];
 
-    images.forEach(imgData => {
+    const allImages = storedImages.length ? storedImages.map(img => img.src) : defaultImages;
+
+    // Build carousel
+    allImages.forEach(url => {
       const img = document.createElement('img');
-      img.src = imgData.src;
+      img.src = url;
       img.classList.add('carousel-img');
       slideContainer.appendChild(img);
     });
 
     slides = document.querySelectorAll('.carousel-img');
     showSlide(currentSlide);
+
+    // Auto-slide every 5 seconds
+    autoSlide = setInterval(() => moveSlide(1), 5000);
+
+    // Touch-swipe support
+    let startX = 0;
+    slideContainer.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+    slideContainer.addEventListener('touchend', e => {
+      const endX = e.changedTouches[0].clientX;
+      if (startX - endX > 50) moveSlide(1);   // swipe left → next
+      if (endX - startX > 50) moveSlide(-1);  // swipe right → previous
+    });
+
+    // Optional: Search filter
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', () => {
+      const filter = searchInput.value.toLowerCase();
+      slides.forEach(img => {
+        img.style.display = img.src.toLowerCase().includes(filter) ? 'block' : 'none';
+      });
+    });
   </script>
 
 </body>
