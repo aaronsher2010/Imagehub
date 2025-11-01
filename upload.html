@@ -3,14 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload Image - ImageHub</title>
-  <meta name="description" content="Upload your high-quality images to ImageHub and showcase them in our dark mode gallery.">
+  <title>Upload - ImageHub</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="canonical" href="https://yourusername.github.io/upload.html">
 </head>
 <body>
 
-  <!-- Navbar -->
   <nav>
     <div class="logo">ImageHub</div>
     <ul>
@@ -19,60 +16,40 @@
     </ul>
   </nav>
 
-  <!-- Upload Form -->
-  <section class="upload-container">
+  <section class="upload-section">
     <h2>Upload Your Image</h2>
     <form id="uploadForm">
-      <input type="text" id="imageTitle" placeholder="Image Title" required>
-      <input type="file" id="imageFile" accept="image/jpeg" required>
+      <input type="file" id="imageUpload" accept="image/jpeg, image/png" required>
       <button type="submit">Upload</button>
     </form>
+    <p id="uploadStatus"></p>
   </section>
 
-  <!-- Uploaded Images Gallery -->
-  <section class="upload-gallery" id="uploadedGallery"></section>
-
   <footer>
-    <p>&copy; 2025 ImageHub. All rights reserved.</p>
+    <p>© 2025 ImageHub | Upload responsibly.</p>
   </footer>
 
   <script>
-    const form=document.getElementById('uploadForm');
-    const gallery=document.getElementById('uploadedGallery');
-    let images=JSON.parse(localStorage.getItem('images'))||[];
-    displayImages();
+    const form = document.getElementById('uploadForm');
+    const status = document.getElementById('uploadStatus');
 
-    form.addEventListener('submit',e=>{
+    form.addEventListener('submit', e => {
       e.preventDefault();
-      const title=document.getElementById('imageTitle').value;
-      const file=document.getElementById('imageFile').files[0];
-      if(!file) return;
+      const file = document.getElementById('imageUpload').files[0];
+      if (!file) return alert('Please select an image.');
 
-      if(file.size>5*1024*1024){ alert("File too large. Max 5MB."); return; }
-
-      const reader=new FileReader();
-      reader.onload=()=>{
-        images.push({title,src:reader.result});
-        localStorage.setItem('images',JSON.stringify(images));
-        displayImages();
+      const reader = new FileReader();
+      reader.onload = () => {
+        const stored = JSON.parse(localStorage.getItem('uploadedImages')) || [];
+        stored.push({ src: reader.result });
+        localStorage.setItem('uploadedImages', JSON.stringify(stored));
+        status.textContent = '✅ Upload successful!';
         form.reset();
       };
       reader.readAsDataURL(file);
     });
-
-    function displayImages(){
-      gallery.innerHTML='';
-      images.forEach(img=>{
-        const card=document.createElement('div');
-        card.className='upload-card';
-        card.innerHTML=`
-          <img src="${img.src}" alt="${img.title} - ImageHub">
-          <div class="overlay">${img.title}</div>
-        `;
-        gallery.appendChild(card);
-      });
-    }
   </script>
 
 </body>
 </html>
+
