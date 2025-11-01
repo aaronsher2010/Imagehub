@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ImageHub - High-Quality Dark Mode Images</title>
-  <meta name="description" content="Discover, upload, and enjoy high-quality images in dark mode. Dynamic carousel showcasing latest uploads.">
+  <title>ImageHub - Home</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="canonical" href="https://yourusername.github.io/">
 </head>
 <body>
 
@@ -17,76 +15,66 @@
       <li><a href="index.html" class="active">Home</a></li>
       <li><a href="upload.html">Upload</a></li>
     </ul>
+    <input type="text" id="searchInput" placeholder="Search images...">
   </nav>
 
-  <!-- Hero Section -->
+  <!-- Hero section -->
   <section class="hero">
-    <div class="hero-text">
-      <h1>Discover Stunning Dark Mode Images</h1>
-      <p>Upload your images or explore the latest featured content in a sleek dark theme.</p>
-      <a href="upload.html" class="hero-btn">Upload Image</a>
+    <div>
+      <h1>Welcome to ImageHub</h1>
+      <p>Upload, browse, and explore high-quality wallpapers.</p>
     </div>
   </section>
 
-  <!-- Featured Carousel -->
+  <!-- Carousel -->
   <section class="featured-section">
     <h2>Featured Images</h2>
-    <div class="carousel-container">
-      <button class="prev" onclick="prevSlide()">&#10094;</button>
-      <div class="carousel-slide" id="carouselSlide"></div>
-      <button class="next" onclick="nextSlide()">&#10095;</button>
+    <div class="carousel">
+      <button class="carousel-btn left" onclick="moveSlide(-1)">&#10094;</button>
+      <div class="carousel-container" id="carouselSlide"></div>
+      <button class="carousel-btn right" onclick="moveSlide(1)">&#10095;</button>
     </div>
   </section>
 
+  <!-- Footer -->
   <footer>
-    <p>&copy; 2025 ImageHub. All rights reserved.</p>
+    <p>© 2025 ImageHub | Built with ❤️ by Aaron</p>
   </footer>
 
   <script>
     const slideContainer = document.getElementById('carouselSlide');
     let slides = [];
-    let index = 0;
+    let currentSlide = 0;
 
-    let uploadedImages = JSON.parse(localStorage.getItem('images')) || [];
-    uploadedImages = uploadedImages.reverse().slice(0,5);
-
-    if(uploadedImages.length === 0){
-      uploadedImages = [
-        { src:'https://via.placeholder.com/800x400/111111/ffffff?text=Image+1', title:'Image 1' },
-        { src:'https://via.placeholder.com/800x400/222222/ffffff?text=Image+2', title:'Image 2' },
-        { src:'https://via.placeholder.com/800x400/333333/ffffff?text=Image+3', title:'Image 3' }
-      ];
+    function showSlide(index) {
+      if (!slides.length) return;
+      slides.forEach(slide => slide.style.display = 'none');
+      slides[index].style.display = 'block';
     }
 
-    uploadedImages.forEach(img => {
-      const imageEl = document.createElement('img');
-      imageEl.src = img.src;
-      imageEl.alt = img.title + ' - ImageHub';
-      imageEl.style.display = 'none';
-      slideContainer.appendChild(imageEl);
+    function moveSlide(n) {
+      if (!slides.length) return;
+      currentSlide = (currentSlide + n + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    // Load from localStorage or show placeholders
+    const savedImages = JSON.parse(localStorage.getItem('uploadedImages')) || [];
+    const images = savedImages.length ? savedImages : [
+      { src: 'https://via.placeholder.com/800x400/1a1a1a/ffffff?text=Wallpaper+1' },
+      { src: 'https://via.placeholder.com/800x400/222222/ffffff?text=Wallpaper+2' },
+      { src: 'https://via.placeholder.com/800x400/333333/ffffff?text=Wallpaper+3' }
+    ];
+
+    images.forEach(imgData => {
+      const img = document.createElement('img');
+      img.src = imgData.src;
+      img.classList.add('carousel-img');
+      slideContainer.appendChild(img);
     });
 
-    slides = slideContainer.getElementsByTagName('img');
-
-    function showSlide(i){
-      for(let j=0;j<slides.length;j++) slides[j].style.display='none';
-      if(slides.length>0) slides[i].style.display='block';
-    }
-
-    function nextSlide(){
-      if(slides.length===0) return;
-      index=(index+1)%slides.length;
-      showSlide(index);
-    }
-
-    function prevSlide(){
-      if(slides.length===0) return;
-      index=(index-1+slides.length)%slides.length;
-      showSlide(index);
-    }
-
-    showSlide(index);
-    setInterval(nextSlide,5000);
+    slides = document.querySelectorAll('.carousel-img');
+    showSlide(currentSlide);
   </script>
 
 </body>
